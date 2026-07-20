@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useKeepStore } from "./hooks/useKeepStore";
+import { useKeepStore } from "./useKeepStore";
 import TopBar from "./components/TopBar";
 import Sidebar from "./components/Sidebar";
 import Composer from "./components/Composer";

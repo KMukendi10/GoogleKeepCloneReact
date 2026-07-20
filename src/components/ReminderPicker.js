@@ -1,5 +1,15 @@
 import { useState } from "react";
-import { toDateTimeLocalValue } from "../utils/date";
+
+// Converts a ms timestamp into the string a <input type="datetime-local">
+// expects (local time, no timezone suffix).
+function toDateTimeLocalValue(timestamp) {
+  if (!timestamp) return "";
+  const d = new Date(timestamp);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(
+    d.getMinutes()
+  )}`;
+}
 
 export default function ReminderPicker({ reminderAt, onSet, onClear }) {
   const [value, setValue] = useState(toDateTimeLocalValue(reminderAt));

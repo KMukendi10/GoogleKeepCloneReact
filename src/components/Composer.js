@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import ColorPicker from "./ColorPicker";
 import LabelPicker from "./LabelPicker";
 import ReminderPicker from "./ReminderPicker";
-import { formatReminder, isOverdue } from "../utils/date";
 import pinIcon from "../assets/pinNote.svg";
 import newlistIcon from "../assets/newlist.svg";
 import drawingIcon from "../assets/newnotedrawing.svg";
@@ -16,6 +15,21 @@ import archiveIcon from "../assets/archive.svg";
 import moreIcon from "../assets/more.svg";
 import undoIcon from "../assets/undo.svg";
 import labelIconSvg from "../assets/label.svg";
+
+function formatReminder(timestamp) {
+  if (!timestamp) return "";
+  const d = new Date(timestamp);
+  const now = new Date();
+  const opts = { month: "short", day: "numeric" };
+  if (d.getFullYear() !== now.getFullYear()) opts.year = "numeric";
+  const datePart = d.toLocaleDateString(undefined, opts);
+  const timePart = d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  return `${datePart}, ${timePart}`;
+}
+
+function isOverdue(timestamp) {
+  return Boolean(timestamp) && timestamp < Date.now();
+}
 
 const EMPTY = { title: "", body: "", color: "default", labels: [], pinned: false, reminderAt: null };
 

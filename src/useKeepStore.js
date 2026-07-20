@@ -16,8 +16,8 @@ function seedNotes() {
   return [
     {
       id: uid(),
-      title: "Welcome to Keep (React)!",
-      body: "This is a React rewrite of the Keep clone. Try pinning a note, adding a label, dragging cards to reorder them, or flipping on dark mode from the top bar.",
+      title: "Welcome to Kazadi Google Keep(React)!",
+      body: "This is my React rewrite of the Keep clone where you can pin a note, add a label, drag cards to reorder them, or flip on dark mode from the top bar.",
       color: "mint",
       labels: ["Getting started"],
       archived: false,
@@ -47,7 +47,7 @@ function seedNotes() {
     {
       id: uid(),
       title: "Manual feature",
-      body: "Labels/category tags: create a label, attach it to any note from the composer or the note editor, then filter notes by clicking the label in the sidebar.",
+      body: "Labels/category tags where you can create a label, attach it to any note from the composer or the note editor, then filter notes by clicking the label in the sidebar.",
       color: "sand",
       labels: ["Getting started"],
       archived: false,

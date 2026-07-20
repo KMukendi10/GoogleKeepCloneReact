@@ -2,13 +2,34 @@ import { useEffect, useRef, useState } from "react";
 import ColorPicker from "./ColorPicker";
 import LabelPicker from "./LabelPicker";
 import ReminderPicker from "./ReminderPicker";
-import { formatDate, formatReminder, isOverdue } from "../utils/date";
 import archiveIcon from "../assets/archive.svg";
 import restoreIcon from "../assets/restore.svg";
 import deleteIcon from "../assets/delete.svg";
 import remindIcon from "../assets/remindMe.svg";
 import bgIcon from "../assets/backgroundOptions.svg";
 import labelIconSvg from "../assets/label.svg";
+
+function formatDate(timestamp) {
+  const d = new Date(timestamp);
+  const opts = { month: "short", day: "numeric" };
+  if (d.getFullYear() !== new Date().getFullYear()) opts.year = "numeric";
+  return d.toLocaleDateString(undefined, opts);
+}
+
+function formatReminder(timestamp) {
+  if (!timestamp) return "";
+  const d = new Date(timestamp);
+  const now = new Date();
+  const opts = { month: "short", day: "numeric" };
+  if (d.getFullYear() !== now.getFullYear()) opts.year = "numeric";
+  const datePart = d.toLocaleDateString(undefined, opts);
+  const timePart = d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  return `${datePart}, ${timePart}`;
+}
+
+function isOverdue(timestamp) {
+  return Boolean(timestamp) && timestamp < Date.now();
+}
 
 export default function NoteModal({
   note,
