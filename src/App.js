@@ -103,10 +103,8 @@ export default function App() {
             if (note.trashed) store.permanentlyDeleteNote(id);
             else store.deleteNote(id);
           }}
-          onToggleReminder={(id) => {
-            const note = store.notes.find((n) => n.id === id);
-            store.updateNote(id, { hasReminder: !note.hasReminder });
-          }}
+          onSetReminder={store.setReminder}
+          onClearReminder={store.clearReminder}
           onCreateLabel={store.addLabel}
           onToggleLabel={store.toggleNoteLabel}
         />

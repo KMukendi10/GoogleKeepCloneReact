@@ -1,14 +1,9 @@
+import { formatDate, formatReminder, isOverdue } from "../utils/date";
 import archiveIcon from "../assets/archive.svg";
 import restoreIcon from "../assets/restore.svg";
 import deleteIcon from "../assets/delete.svg";
 import pinIcon from "../assets/pinNote.svg";
-
-function formatDate(timestamp) {
-  const d = new Date(timestamp);
-  const opts = { month: "short", day: "numeric" };
-  if (d.getFullYear() !== new Date().getFullYear()) opts.year = "numeric";
-  return d.toLocaleDateString(undefined, opts);
-}
+import remindIcon from "../assets/remindMe.svg";
 
 export default function NoteCard({
   note,
@@ -54,6 +49,13 @@ export default function NoteCard({
 
       {note.title && <h3 className="note-card__title">{note.title}</h3>}
       <p className="note-card__body">{note.body}</p>
+
+      {note.reminderAt && (
+        <span className={`reminder-chip${isOverdue(note.reminderAt) ? " is-overdue" : ""}`}>
+          <img src={remindIcon} alt="" />
+          {formatReminder(note.reminderAt)}
+        </span>
+      )}
 
       {note.labels?.length > 0 && (
         <div className="note-card__labels">

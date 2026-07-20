@@ -1,19 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import ColorPicker from "./ColorPicker";
 import LabelPicker from "./LabelPicker";
+import ReminderPicker from "./ReminderPicker";
+import { formatDate, formatReminder, isOverdue } from "../utils/date";
 import archiveIcon from "../assets/archive.svg";
 import restoreIcon from "../assets/restore.svg";
 import deleteIcon from "../assets/delete.svg";
 import remindIcon from "../assets/remindMe.svg";
 import bgIcon from "../assets/backgroundOptions.svg";
 import labelIconSvg from "../assets/label.svg";
-
-function formatDate(timestamp) {
-  const d = new Date(timestamp);
-  const opts = { month: "short", day: "numeric" };
-  if (d.getFullYear() !== new Date().getFullYear()) opts.year = "numeric";
-  return d.toLocaleDateString(undefined, opts);
-}
 
 export default function NoteModal({
   note,
@@ -23,7 +18,8 @@ export default function NoteModal({
   onArchiveToggle,
   onRestore,
   onDelete,
-  onToggleReminder,
+  onSetReminder,
+  onClearReminder,
   onCreateLabel,
   onToggleLabel,
 }) {
@@ -32,6 +28,7 @@ export default function NoteModal({
   const [color, setColor] = useState(note.color);
   const [colorPopoverOpen, setColorPopoverOpen] = useState(false);
   const [labelPopoverOpen, setLabelPopoverOpen] = useState(false);
+  const [reminderPopoverOpen, setReminderPopoverOpen] = useState(false);
   const titleRef = useRef(null);
 
   useEffect(() => {
@@ -68,6 +65,13 @@ export default function NoteModal({
           value={body}
           onChange={(e) => setBody(e.target.value)}
         />
+
+        {note.reminderAt && (
+          <span className={`reminder-chip${isOverdue(note.reminderAt) ? " is-overdue" : ""}`}>
+            <img src={remindIcon} alt="" />
+            {formatReminder(note.reminderAt)}
+          </span>
+        )}
 
         {note.labels?.length > 0 && (
           <div className="note-card__labels" style={{ marginBottom: 8 }}>
@@ -113,9 +117,15 @@ export default function NoteModal({
           <button
             className="icon-btn"
             data-tooltip="Remind me"
-            aria-label="Toggle reminder"
-            aria-pressed={note.hasReminder}
-            onClick={() => onToggleReminder(note.id)}
+            aria-label="Set reminder"
+            aria-haspopup="true"
+            aria-expanded={reminderPopoverOpen}
+            aria-pressed={Boolean(note.reminderAt)}
+            onClick={() => {
+              setReminderPopoverOpen((v) => !v);
+              setColorPopoverOpen(false);
+              setLabelPopoverOpen(false);
+            }}
           >
             <img src={remindIcon} alt="Remind me" />
           </button>
@@ -128,6 +138,7 @@ export default function NoteModal({
             onClick={() => {
               setColorPopoverOpen((v) => !v);
               setLabelPopoverOpen(false);
+              setReminderPopoverOpen(false);
             }}
           >
             <img src={bgIcon} alt="Background options" />
@@ -141,6 +152,7 @@ export default function NoteModal({
             onClick={() => {
               setLabelPopoverOpen((v) => !v);
               setColorPopoverOpen(false);
+              setReminderPopoverOpen(false);
             }}
           >
             <img src={labelIconSvg} alt="Add label" />
@@ -157,6 +169,21 @@ export default function NoteModal({
             <img src={deleteIcon} alt="Delete" />
           </button>
 
+          {reminderPopoverOpen && (
+            <div className="color-popover color-popover--modal reminder-popover-anchor">
+              <ReminderPicker
+                reminderAt={note.reminderAt}
+                onSet={(ts) => {
+                  onSetReminder(note.id, ts);
+                  setReminderPopoverOpen(false);
+                }}
+                onClear={() => {
+                  onClearReminder(note.id);
+                  setReminderPopoverOpen(false);
+                }}
+              />
+            </div>
+          )}
           {colorPopoverOpen && (
             <div className="color-popover color-popover--modal">
               <ColorPicker selected={color} onSelect={setColor} />

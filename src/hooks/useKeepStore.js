@@ -24,8 +24,23 @@ function seedNotes() {
       pinned: true,
       trashed: false,
       deletedAt: null,
-      hasReminder: false,
+      reminderAt: null,
       order: 0,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: uid(),
+      title: "Reminders feature",
+      body: "Click the bell icon on a note to set a reminder date & time. It'll show a chip on the card and show up under Reminders in the sidebar.",
+      color: "storm",
+      labels: [],
+      archived: false,
+      pinned: false,
+      trashed: false,
+      deletedAt: null,
+      reminderAt: now + 24 * 60 * 60 * 1000,
+      order: 1,
       createdAt: now,
       updatedAt: now,
     },
@@ -39,8 +54,8 @@ function seedNotes() {
       pinned: false,
       trashed: false,
       deletedAt: null,
-      hasReminder: false,
-      order: 1,
+      reminderAt: null,
+      order: 2,
       createdAt: now,
       updatedAt: now,
     },
@@ -117,7 +132,7 @@ export function useKeepStore() {
           color: data.color ?? "default",
           labels: data.labels ?? [],
           pinned: Boolean(data.pinned),
-          hasReminder: Boolean(data.hasReminder),
+          reminderAt: data.reminderAt ?? null,
           archived: Boolean(data.archived),
           trashed: false,
           deletedAt: null,
@@ -213,6 +228,24 @@ export function useKeepStore() {
     });
   }, []);
 
+  // Reminder feature: attach/detach a due date+time to a note; the sidebar's
+  // "Reminders" view filters on `reminderAt` being set.
+  const setReminder = useCallback(
+    (id, timestamp) => {
+      updateNote(id, { reminderAt: timestamp });
+      showToast("Reminder set.", null);
+    },
+    [updateNote, showToast]
+  );
+
+  const clearReminder = useCallback(
+    (id) => {
+      updateNote(id, { reminderAt: null });
+      showToast("Reminder removed.", null);
+    },
+    [updateNote, showToast]
+  );
+
   const toggleTheme = useCallback(() => {
     setTheme((t) => (t === "dark" ? "light" : "dark"));
   }, []);
@@ -224,7 +257,7 @@ export function useKeepStore() {
     } else if (currentView === "archive") {
       visible = notes.filter((n) => n.archived && !n.trashed);
     } else if (currentView === "reminders") {
-      visible = notes.filter((n) => n.hasReminder && !n.trashed && !n.archived);
+      visible = notes.filter((n) => n.reminderAt && !n.trashed && !n.archived);
     } else if (currentView.startsWith("label:")) {
       const label = currentView.slice("label:".length);
       visible = notes.filter((n) => !n.trashed && !n.archived && n.labels?.includes(label));
@@ -240,6 +273,10 @@ export function useKeepStore() {
           n.body.toLowerCase().includes(q) ||
           n.labels?.some((l) => l.toLowerCase().includes(q))
       );
+    }
+
+    if (currentView === "reminders") {
+      return visible.slice().sort((a, b) => (a.reminderAt ?? 0) - (b.reminderAt ?? 0));
     }
 
     return visible.slice().sort((a, b) => {
@@ -273,6 +310,8 @@ export function useKeepStore() {
     removeLabel,
     toggleNoteLabel,
     reorderNotes,
+    setReminder,
+    clearReminder,
     toggleTheme,
     showToast,
     hideToast,

@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import ColorPicker from "./ColorPicker";
 import LabelPicker from "./LabelPicker";
+import ReminderPicker from "./ReminderPicker";
+import { formatReminder, isOverdue } from "../utils/date";
 import pinIcon from "../assets/pinNote.svg";
 import newlistIcon from "../assets/newlist.svg";
 import drawingIcon from "../assets/newnotedrawing.svg";
@@ -15,13 +17,14 @@ import moreIcon from "../assets/more.svg";
 import undoIcon from "../assets/undo.svg";
 import labelIconSvg from "../assets/label.svg";
 
-const EMPTY = { title: "", body: "", color: "default", labels: [], pinned: false, hasReminder: false };
+const EMPTY = { title: "", body: "", color: "default", labels: [], pinned: false, reminderAt: null };
 
 export default function Composer({ labels, onAddNote, onCreateLabel }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(EMPTY);
   const [colorPopoverOpen, setColorPopoverOpen] = useState(false);
   const [labelPopoverOpen, setLabelPopoverOpen] = useState(false);
+  const [reminderPopoverOpen, setReminderPopoverOpen] = useState(false);
   const bodyRef = useRef(null);
   const wrapRef = useRef(null);
 
@@ -45,6 +48,7 @@ export default function Composer({ labels, onAddNote, onCreateLabel }) {
     setOpen(false);
     setColorPopoverOpen(false);
     setLabelPopoverOpen(false);
+    setReminderPopoverOpen(false);
     if (bodyRef.current) bodyRef.current.style.height = "auto";
   }
 
@@ -81,6 +85,13 @@ export default function Composer({ labels, onAddNote, onCreateLabel }) {
           onFocus={() => setOpen(true)}
           onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))}
         />
+
+        {open && draft.reminderAt && (
+          <span className={`reminder-chip${isOverdue(draft.reminderAt) ? " is-overdue" : ""}`}>
+            <img src={remindIcon} alt="" />
+            {formatReminder(draft.reminderAt)}
+          </span>
+        )}
 
         <div className="composer__row">
           <textarea
@@ -136,6 +147,7 @@ export default function Composer({ labels, onAddNote, onCreateLabel }) {
                 onClick={() => {
                   setColorPopoverOpen((v) => !v);
                   setLabelPopoverOpen(false);
+                  setReminderPopoverOpen(false);
                 }}
               >
                 <img src={bgIcon} alt="Background options" />
@@ -150,6 +162,7 @@ export default function Composer({ labels, onAddNote, onCreateLabel }) {
                 onClick={() => {
                   setLabelPopoverOpen((v) => !v);
                   setColorPopoverOpen(false);
+                  setReminderPopoverOpen(false);
                 }}
               >
                 <img src={labelIconSvg} alt="Add label" />
@@ -158,9 +171,15 @@ export default function Composer({ labels, onAddNote, onCreateLabel }) {
                 type="button"
                 className="icon-btn"
                 data-tooltip="Remind me"
-                aria-label="Toggle reminder"
-                aria-pressed={draft.hasReminder}
-                onClick={() => setDraft((d) => ({ ...d, hasReminder: !d.hasReminder }))}
+                aria-label="Set reminder"
+                aria-haspopup="true"
+                aria-expanded={reminderPopoverOpen}
+                aria-pressed={Boolean(draft.reminderAt)}
+                onClick={() => {
+                  setReminderPopoverOpen((v) => !v);
+                  setColorPopoverOpen(false);
+                  setLabelPopoverOpen(false);
+                }}
               >
                 <img src={remindIcon} alt="Remind me" />
               </button>
@@ -208,6 +227,21 @@ export default function Composer({ labels, onAddNote, onCreateLabel }) {
                           : [...d.labels, label],
                       }))
                     }
+                  />
+                </div>
+              )}
+              {reminderPopoverOpen && (
+                <div className="color-popover reminder-popover-anchor">
+                  <ReminderPicker
+                    reminderAt={draft.reminderAt}
+                    onSet={(ts) => {
+                      setDraft((d) => ({ ...d, reminderAt: ts }));
+                      setReminderPopoverOpen(false);
+                    }}
+                    onClear={() => {
+                      setDraft((d) => ({ ...d, reminderAt: null }));
+                      setReminderPopoverOpen(false);
+                    }}
                   />
                 </div>
               )}

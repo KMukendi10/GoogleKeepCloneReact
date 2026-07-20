@@ -31,6 +31,18 @@ Toggle button in the top bar (🌙/☀️) flips a `data-theme` attribute on `<h
 **AI-assisted feature #2 — Drag-and-drop reordering**
 On the main "Notes" view (with no active search), drag any unpinned/pinned note card onto another to reorder them. Order is stored per-note and persisted, and pinned notes still always float to the top.
 
+**Reminders**
+Click the bell icon in the composer or the note editor to open a small date/time picker (with "Later today / Tomorrow / Next week" presets, or a manual date-time picker). Setting a reminder shows a chip on the note (red if overdue) and makes the note show up under **Reminders** in the sidebar, sorted by soonest due date. Clearing the reminder removes it from that view.
+
+## Project convention: `.js`, not `.jsx`
+
+Every component in this project is a plain `.js` file (no `.jsx` extension), even though they contain JSX. Two things make that work:
+
+1. **Vite/esbuild**: by default Vite's esbuild transform only parses JSX syntax in `.jsx`/`.tsx` files. `vite.config.js` overrides that with `esbuild.loader: 'jsx'` scoped to `.js` files under `src/`, plus a matching `optimizeDeps.esbuildOptions.loader` entry so dependency pre-bundling agrees.
+2. **Vite version**: this project intentionally pins `vite@^6` (the stable, esbuild-based release) rather than the newer experimental `vite@8` rolldown/oxc-based builds. In that experimental build, JSX-in-`.js` parsing is decided by a native Rust plugin that currently ignores the equivalent `lang: 'jsx'` override — a real limitation in that preview tooling, not something fixable from `vite.config.js` alone.
+
+If you ever add TypeScript or want `.jsx` back, you can drop the `esbuild`/`optimizeDeps` block above — it's just there to keep `.js` files.
+
 ## Data persistence
 
 Everything (notes, labels, theme, layout) is saved to `localStorage` — no backend required.
