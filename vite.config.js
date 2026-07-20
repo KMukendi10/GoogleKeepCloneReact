@@ -1,13 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
 
-  // Required for GitHub Pages
-  base: '/GoogleKeepCloneReact/',
+  // GitHub Pages uses the repo name, Netlify uses the root
+  base: mode === 'github' ? '/GoogleKeepCloneReact/' : '/',
 
-  // Treat .js files in src as JSX
   esbuild: {
     loader: 'jsx',
     include: /src\/.*\.js$/,
@@ -21,4 +20,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))
