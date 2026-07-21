@@ -30,6 +30,7 @@ export default function NoteCard({
   note,
   onOpen,
   onArchiveToggle,
+  onRestore,
   onDelete,
   onTogglePin,
   draggable,
@@ -102,6 +103,19 @@ export default function NoteCard({
               }}
             >
               <img src={isArchived ? restoreIcon : archiveIcon} alt="" />
+            </button>
+          )}
+          {isTrashed && (
+            <button
+              className="icon-btn"
+              data-tooltip="Restore"
+              aria-label="Restore note"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRestore(note.id);
+              }}
+            >
+              <img src={restoreIcon} alt="" />
             </button>
           )}
           <button

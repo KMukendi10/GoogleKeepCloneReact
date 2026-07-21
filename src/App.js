@@ -73,6 +73,7 @@ export default function App() {
               const note = store.notes.find((n) => n.id === id);
               store.setArchived(id, !note.archived);
             }}
+            onRestore={store.restoreFromTrash}
             onDelete={(id) => {
               const note = store.notes.find((n) => n.id === id);
               if (note.trashed) store.permanentlyDeleteNote(id);

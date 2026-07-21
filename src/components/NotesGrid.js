@@ -9,6 +9,7 @@ export default function NotesGrid({
   searchQuery,
   onOpen,
   onArchiveToggle,
+  onRestore,
   onDelete,
   onTogglePin,
   onReorder,
@@ -57,6 +58,7 @@ export default function NotesGrid({
           note={note}
           onOpen={onOpen}
           onArchiveToggle={onArchiveToggle}
+          onRestore={onRestore}
           onDelete={onDelete}
           onTogglePin={onTogglePin}
           draggable={canDrag}
