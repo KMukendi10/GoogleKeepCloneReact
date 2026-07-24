@@ -1,6 +1,6 @@
 {
-  "homepage": "https://kmukendi10.github.io/GoogleKeepCloneReact/",
-  "name": "keep-react",
+  "homepage": "https://KMukendi10.github.io/GoogleKeepCloneReact/",
+  "name": "googlekeepclonereact",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "build": "vite build",
     "build:github": "vite build --mode github",
     "preview": "vite preview",
-    "predeploy": "npm run build:github",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
